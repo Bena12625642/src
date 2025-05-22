@@ -1,0 +1,259 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
+ */
+package P4P;
+import P4P.Joueur;
+import P4P.LesJoueurs;
+import P4P.PanneauImage;
+import javax.swing.*;
+import java.awt.*;
+/**
+ *
+ * @author benam
+ */
+public class Scoredlg extends javax.swing.JDialog {
+
+    /**
+     * Creates new form Scoredlg
+     */
+    private LesJoueurs lst;
+    private Joueur j1;
+    private Joueur j2;
+    private DefaultListModel<String> modelj= new DefaultListModel<>();
+   
+    private Joueur[] joueursCamembert = new Joueur[10]; // 10 max par défaut
+    private int nbJ= 0;
+    
+
+    
+    public Scoredlg(java.awt.Frame parent, boolean modal,LesJoueurs listj,Joueur joueur1,Joueur joueur2) {
+        super(parent, modal);
+        initComponents();
+        this.pack();
+        this.setSize(500, 500);      
+        this.j1=joueur1;
+        this.j2=joueur2;
+        this.lst=listj;
+        initListe();
+        initGalerie();  
+        ajouterJoueurDansCamembert(j1);
+        ajouterJoueurDansCamembert(j2);
+    }
+    
+    //Remplit le modèle de la JList avec les pseudos de tous les joueurs
+    private void initListe(){
+        for (int i=0;i<this.lst.getNbJoueurs();i++){
+            this.modelj.addElement(this.lst.getj(i).getPseudo());//Ajoute le pseudo du joueur  
+        }
+            jlist.setModel(modelj);//Lie le modèle rempli à la JList
+    }
+    
+    //Initialise la galerie en bas avec la photo et le pseudo de chaque joueur
+    private void initGalerie() {
+      PGalerie.removeAll();
+      PGalerie.setLayout(new GridLayout(1,this.lst.getNbJoueurs(),0,0));
+      for (int i=0;i<this.lst.getNbJoueurs();i++){
+          Joueur joueur = this.lst.getj(i);
+          JPanel panj = new JPanel(new BorderLayout());
+          panj.setPreferredSize(new Dimension(100, 120));
+          PanneauImage pan = new PanneauImage(joueur.getPhoto().getImage());
+          pan.setPreferredSize(new Dimension(80,80));
+          JLabel nom=new JLabel(joueur.getPseudo(),JLabel.CENTER);
+          panj.add(pan,BorderLayout.CENTER);
+          panj.add(nom,BorderLayout.SOUTH);
+          PGalerie.add(panj);
+      }
+      PGalerie.revalidate();
+      PGalerie.repaint();
+    }
+
+
+    private void ajouterJoueurDansCamembert(Joueur j) {
+        //Vérifie si le joueur est déjà dans le camembert
+        for(int i=0;i<nbJ;i++){
+            if(joueursCamembert[i]==j){
+              return; //joueur déjà présent on ne l'ajoute pas
+            }
+        }
+        //Ajoute le joueur si y a encore de la place
+        if (nbJ<joueursCamembert.length) {
+            joueursCamembert[nbJ]=j;
+            nbJ++;
+            repaint();//redessine le camembert
+        }
+    }
+    
+    public void paint(Graphics g){
+        super.paint(g);
+        dessineCamembert(g);
+    }
+    
+    private void dessineCamembert(Graphics g) {
+        PCentreCamembert.setBackground(Color.black);
+        //calcul du total des victoires de tous les joueurs
+        int totalScore=0;
+        for (int i=0; i<nbJ;i++) {
+            totalScore+=joueursCamembert[i].getNbpartiesGagnees();
+        }
+        //taille et position du camembert
+        int largeur=200;
+        int hauteur=200;
+        int x =(PCentreCamembert.getWidth()-largeur)/2;//centrage horizontal
+        int y =(PCentreCamembert.getHeight()-hauteur);//centrage vertical
+        int startAngle = 0;// début de l'angle du camebert
+        //tableau de couleurs pour les différentes sections du camembert
+        Color[] colors = {
+            new Color(128,0,128), //violet
+            new Color(0,200,150),//bleu-vert
+            new Color(255,165,0),//orange
+            new Color(0,0,255),//bleu
+            new Color(200,0,100),//rose foncé
+            new Color(0,150,100) //vert foncé
+        };
+        //Pour chaque joueur, dessiner une part du camembert
+        for (int i=0;i<nbJ;i++) {
+            Joueur j=joueursCamembert[i];
+            int score=j.getNbpartiesGagnees();
+            int angle;
+            //calcul de l'angle en fonction du score du joueur
+            angle=(int)(360*score/totalScore);
+            if (angle<5){
+                angle=5;//minimum pour rendre visible
+            }
+            //choisir une couleur pour chaque joueur
+            g.setColor(colors[i%colors.length]);
+            //dessiner la part du camembert
+            g.fillArc(x,y,largeur,hauteur,startAngle,angle);
+            //afficher le pseudo du joueur et son score sous le camembert
+            g.drawString(j.getPseudo()+" : "+score,x+largeur+10,y+(i*20)+20);
+            //met à jour l'angle de départ pour le joueur suivant
+            startAngle+=angle;
+        }
+    }
+
+
+
+
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jlist = new javax.swing.JList<>();
+        PCentreCamembert = new javax.swing.JPanel();
+        PGalerie = new javax.swing.JPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("score des joueurs");
+        jPanel1.add(jLabel1);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        jPanel3.setLayout(new java.awt.BorderLayout());
+
+        jlist.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jlistMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jlist);
+
+        jPanel3.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(jPanel3, java.awt.BorderLayout.EAST);
+
+        PCentreCamembert.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(PCentreCamembert, java.awt.BorderLayout.CENTER);
+
+        javax.swing.GroupLayout PGalerieLayout = new javax.swing.GroupLayout(PGalerie);
+        PGalerie.setLayout(PGalerieLayout);
+        PGalerieLayout.setHorizontalGroup(
+            PGalerieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 605, Short.MAX_VALUE)
+        );
+        PGalerieLayout.setVerticalGroup(
+            PGalerieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(PGalerie, java.awt.BorderLayout.SOUTH);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jlistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlistMouseClicked
+        // TODO add your handling code here:
+         int index = jlist.getSelectedIndex();
+        if (index != 0) {
+            Joueur j = this.lst.getj(index);
+            ajouterJoueurDansCamembert(j);  
+        }
+    }//GEN-LAST:event_jlistMouseClicked
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Scoredlg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Scoredlg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Scoredlg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Scoredlg.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                LesJoueurs lstj = new LesJoueurs();
+                Joueur j=new Joueur();
+                Joueur jj= new Joueur();
+                Scoredlg dialog = new Scoredlg(new javax.swing.JFrame(), true,lstj,j,jj);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel PCentreCamembert;
+    private javax.swing.JPanel PGalerie;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> jlist;
+    // End of variables declaration//GEN-END:variables
+}
